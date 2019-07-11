@@ -1,0 +1,104 @@
+body{
+	background: black;
+	color: white;
+	font-family: Arial, Helvetica, Sans-Serif
+}
+
+body.wrong{
+	background: #fc5327;
+	color: #3fc0f2;
+}
+
+body.wrong #man{
+	fill: #3fc0f2;
+}
+
+body.win{
+	background: green;
+}
+
+.game{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.half{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+#man-container{
+	width: 50%;
+}
+
+#word-container{
+	width: 50%;
+	flex-wrap: wrap;
+	height: 30vh;
+}
+
+#word-letters{
+	width: 100%;
+	align-self: flex-start;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+}
+
+.letter{
+	border-bottom: .15em white solid;
+	font-size: 3em;
+	text-transform: uppercase;
+	margin: 0 .1em;
+	width: 1em;
+	height: 1.15em;
+	text-align: center;
+	alignment-baseline: baseline;
+}
+
+#used-letters{
+	align-self: flex-end;
+	display: none;
+	width: 100%;
+}
+
+span#used{
+	text-transform: uppercase;
+}
+
+
+#man{
+	fill: white;
+	height: 90vh;
+}
+
+#guess{
+	position: absolute;
+	z-index: 999999;
+	text-transform: uppercase;
+	font-size: 40vw;
+	color: #3fc0f2;
+
+}
+
+#end{
+	position: absolute;
+	z-index: 999999;
+	text-transform: uppercase;
+	font-size: 24vw;
+	height: auto;
+	width: auto;
+	padding: .05em;
+}
+
+.lose{
+	background-color: #bc9a23;
+	color: #44812e;
+}
+
+#sfx{
+	display: none;
+}
