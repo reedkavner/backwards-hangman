@@ -11,7 +11,7 @@ $(document).ready(function() {
     const validKeys = 'abcdefghijklmnopqrstuvwxyz';
     var wrongCount = 0;
     var correctCount = 0;
-    var wrongGuesses = '';
+    var wrongGuesses = [];
     var correctGuesses = '';
     var gameOver = false;
 
@@ -62,8 +62,8 @@ $(document).ready(function() {
         $('body').removeClass('wrong');
       }, 300);
 
-      wrongGuesses = wrongGuesses + letter;
-      $('#used').text(wrongGuesses);
+      wrongGuesses.push(letter);
+      $('#used').text(wrongGuesses.join(''));
       $('#used-letters').show();
       wrongCount++;
 
