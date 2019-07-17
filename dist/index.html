@@ -8,7 +8,12 @@
   </head>
 
   <body class="">
-    <div class="game">
+    <div class="main">
+      <div id="welcome">
+        <img id="logo" src="assets/img/logo.gif">
+        Press any key to start
+      </div>
+      <div id="game">
       <div class="half" id="man-container">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 722.6113 1339.2979" id="man">
           <title>man-0</title>
@@ -76,8 +81,8 @@
           Play again?
         </button>
       </div>
-    </div>
-    <!-- div.game -->
+    </div><!-- div.game --> 
+  </div>
     <script
       src="https://code.jquery.com/jquery-3.4.1.min.js"
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
@@ -85,7 +90,7 @@
     ></script>
     <script src="main.js"></script>
     <div id="sfx">
-      <audio id="sfx-start" src="assets/sfx/start.mp3" preload="auto"></audio>
+      <audio autoplay="autoplay" id="sfx-start" src="assets/sfx/start.mp3" preload="auto"></audio>
       <audio id="sfx-guess" src="assets/sfx/guess.mp3" preload="auto"></audio>
       <audio id="sfx-correct" src="assets/sfx/correct.mp3" preload="auto"></audio>
       <audio id="sfx-wrong" src="assets/sfx/wrong.mp3" preload="auto"></audio>

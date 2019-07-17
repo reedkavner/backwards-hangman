@@ -15,11 +15,13 @@ class BackwardsHangman {
 
   // Init
   startGame() {
+    $('#sfx-start')[0].play();
     // Generate a random word and display its letters.
     this.state.word = validWords[Math.round(Math.random() * validWords.length)];
 
     this.displayNewWord(this.state.word);
     this.startListener();
+    $('#game').css('display', 'flex');
   }
 
   restartGame() {
@@ -70,7 +72,8 @@ class BackwardsHangman {
 
     // Display the guess
     $('#guess').text(letter);
-    window.setTimeout(() => $('#guess').text(''), 300);
+    $('#guess').addClass('glow');
+    window.setTimeout(() => $('#guess').text('').removeClass('glow'), 300);
 
     // Wait a beat then evaluate the guess
     window.setTimeout(
@@ -152,6 +155,10 @@ class BackwardsHangman {
 }
 
 window.onload = () => {
-  const Game = new BackwardsHangman();
-  Game.startGame();
+  $(document).keypress(e => {
+    $(document).unbind("keypress");
+    $('#welcome').hide();
+    const Game = new BackwardsHangman();
+    Game.startGame(); 
+  });
 };
