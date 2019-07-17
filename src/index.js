@@ -1,14 +1,17 @@
-import validWords from '../dist/assets/validWords.json';
+// NOTE: Currently we are hardcoding the words and the order they appear, this could be changed later.
+const PlayableWords = ['cow', 'dog', 'absolutely', 'ke$ha'];
 
 class BackwardsHangman {
   constructor() {
     this.state = {
-      word: '',
+      word: PlayableWords[0].split(''),
+      level: 0,
       validKeys: 'abcdefghijklmnopqrstuvwxyz',
       wrongCount: 0,
       correctCount: 0,
       wrongGuesses: [],
       correctGuesses: [],
+      guessActive: false,
       gameOver: false,
     };
   }
@@ -17,7 +20,7 @@ class BackwardsHangman {
   startGame() {
     $('#sfx-start')[0].play();
     // Generate a random word and display its letters.
-    this.state.word = validWords[Math.round(Math.random() * validWords.length)];
+    this.state.word = PlayableWords[0].split('');
 
     this.displayNewWord(this.state.word);
     this.startListener();
@@ -26,16 +29,19 @@ class BackwardsHangman {
 
   restartGame() {
     this.state = {
-      word: validWords[Math.round(Math.random() * validWords.length)],
-      validKeys: 'abcdefghijklmnopqrstuvwxyz',
+      word: PlayableWords[this.state.level + 1].split(''),
+      level: this.state.level + 1,
+      validKeys: 'abcdefghijklmnopqrstuvwxyz$',
       wrongCount: 0,
       correctCount: 0,
       wrongGuesses: [],
       correctGuesses: [],
+      guessActive: false,
       gameOver: false,
     };
 
     //TODO add a class to everything that should be hidden on restart
+    $('#used').text('');
     $('#lose').hide();
     $('#face').hide();
     $('#sun').hide();
@@ -47,26 +53,27 @@ class BackwardsHangman {
 
   displayNewWord(word) {
     $('#word-letters').html(
-      this.state.word.split('').map(letter => {
+      word.map(letter => {
         const $div = $('<div>', { class: `letter letter-${letter}` });
         $div.text(letter);
         return $div;
       }),
     );
-
-    // for (let i = 0; i < this.state.word.length; ++i) {
-    //   const $div = $('<div>', { class: `letter letter-${this.state.word[i]}` });
-    //   $div.text(word[i]);
-    //   $('#word-letters').append($div);
-    // }
   }
 
   startListener() {
     $(document).keypress(e => {
-      if (!this.state.gameOver) {
-        const pressedKey = e.key.toLowerCase();
-        if (this.state.validKeys.includes(pressedKey)) {
-          this.guessLetter(pressedKey);
+      if (this.state.guessActive) {
+        return false; // Just reject it
+      } else {
+        this.state.guessActive = true;
+        window.setTimeout(() => (this.state.guessActive = false), 350);
+
+        if (!this.state.gameOver) {
+          const pressedKey = e.key.toLowerCase();
+          if (this.state.validKeys.includes(pressedKey)) {
+            this.guessLetter(pressedKey);
+          }
         }
       }
     });
@@ -78,23 +85,31 @@ class BackwardsHangman {
     // Display the guess
     $('#guess').text(letter);
     $('#guess').addClass('glow');
-    window.setTimeout(() => $('#guess').text('').removeClass('glow'), 300);
-
-    // Wait a beat then evaluate the guess
     window.setTimeout(
-      () => (this.state.word.includes(letter) ? this.correctGuess(letter) : this.incorrectGuess(letter)),
-      500,
+      () =>
+        $('#guess')
+          .text('')
+          .removeClass('glow'),
+      300,
     );
+
+    // Wait a beat then evaluate the guess, not allowing a guess in that meantime.
+    if (this.state.word.includes(letter)) {
+      window.setTimeout(() => this.correctGuess(letter), 300);
+    } else window.setTimeout(() => this.incorrectGuess(letter), 300);
   }
 
   correctGuess(letter) {
     $('#sfx-correct')[0].play();
+
     if (!this.state.correctGuesses.includes(letter)) {
       this.state.correctGuesses.push(letter);
-      $(`.letter-${letter}`).text('');
       ++this.state.correctCount;
+      $(`.letter-${letter}`).text('');
 
-      if (this.state.correctCount === this.state.word.length) this.win();
+      // If the correctCount is the same the sum of the unique characters in the word, win.
+      const sumOfUniq = new Set(this.state.word).size;
+      if (this.state.correctCount === sumOfUniq) this.win();
     }
   }
 
@@ -146,7 +161,7 @@ class BackwardsHangman {
     window.setTimeout(() => {
       $('#retry').css('display', 'block');
       $(document).keypress(e => {
-        $(document).unbind("keypress");
+        $(document).unbind('keypress');
         this.restartGame();
       });
     }, 1000);
@@ -162,7 +177,7 @@ class BackwardsHangman {
     window.setTimeout(() => {
       $('#retry').css('display', 'block');
       $(document).keypress(e => {
-        $(document).unbind("keypress");
+        $(document).unbind('keypress');
         this.restartGame();
       });
     }, 500);
@@ -171,9 +186,9 @@ class BackwardsHangman {
 
 window.onload = () => {
   $(document).keypress(e => {
-    $(document).unbind("keypress");
+    $(document).unbind('keypress');
     $('#welcome').hide();
     const Game = new BackwardsHangman();
-    Game.startGame(); 
+    Game.startGame();
   });
 };
