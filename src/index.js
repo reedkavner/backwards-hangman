@@ -1,5 +1,5 @@
-// NOTE: Currently we are hardcoding the words and the order they appear, this could be changed later.
-const PlayableWords = ['cow', 'dog', 'absolutely', 'ke$ha'];
+// List of playable words in order that they'll be played. These need to be lowercase.
+const PlayableWords = ['cow', 'absolutely', 'ke$ha'];
 
 class BackwardsHangman {
   constructor() {
@@ -18,6 +18,7 @@ class BackwardsHangman {
 
   // Init
   startGame() {
+    $('#sfx-start')[0].volume = 0.3;
     $('#sfx-start')[0].play();
     // Generate a random word and display its letters.
     this.state.word = PlayableWords[0].split('');
@@ -27,10 +28,10 @@ class BackwardsHangman {
     $('#game').css('display', 'flex');
   }
 
-  restartGame() {
+  restartGame(win = false) {
     this.state = {
-      word: PlayableWords[this.state.level + 1].split(''),
-      level: this.state.level + 1,
+      word: win ? PlayableWords[this.state.level + 1].split('') : PlayableWords[0].split(''),
+      level: win ? this.state.level + 1 : 0,
       validKeys: 'abcdefghijklmnopqrstuvwxyz$',
       wrongCount: 0,
       correctCount: 0,
@@ -40,10 +41,17 @@ class BackwardsHangman {
       gameOver: false,
     };
 
-    //TODO add a class to everything that should be hidden on restart
+    // Reshowing and rehiding various things.
+    $('rect#Rleg').show();
+    $('rect#Lleg').show();
+    $('rect#Rarm').show();
+    $('rect#Larm').show();
+    $('rect#torso').show();
+    $('path#head').show();
     $('#used').text('');
     $('#lose').hide();
     $('#face').hide();
+    $('#used-letters').hide();
     $('#sun').hide();
     $('body').attr('class', '');
     $('#retry').css('display', 'none');
@@ -54,7 +62,7 @@ class BackwardsHangman {
   displayNewWord(word) {
     $('#word-letters').html(
       word.map(letter => {
-        const $div = $('<div>', { class: `letter letter-${letter}` });
+        const $div = $('<div>', { class: `letter` });
         $div.text(letter);
         return $div;
       }),
@@ -80,6 +88,7 @@ class BackwardsHangman {
   }
 
   guessLetter(letter) {
+    $('#sfx-guess')[0].volume = 0.3;
     $('#sfx-guess')[0].play();
 
     // Display the guess
@@ -100,12 +109,23 @@ class BackwardsHangman {
   }
 
   correctGuess(letter) {
+    $('#sfx-correct')[0].volume = 0.3;
     $('#sfx-correct')[0].play();
 
     if (!this.state.correctGuesses.includes(letter)) {
       this.state.correctGuesses.push(letter);
       ++this.state.correctCount;
-      $(`.letter-${letter}`).text('');
+
+      // Whatever index the letter is in the word is also the index of the parent dom collection
+      const parentNodeList = $('#word-letters')
+        .children()
+        .toArray();
+
+      parentNodeList.forEach(letterNode => {
+        if (letterNode.innerText.toLowerCase() === letter) {
+          letterNode.innerText = '';
+        }
+      });
 
       // If the correctCount is the same the sum of the unique characters in the word, win.
       const sumOfUniq = new Set(this.state.word).size;
@@ -115,6 +135,7 @@ class BackwardsHangman {
 
   incorrectGuess(letter) {
     // TODO: Move sound effects into helper fn.
+    $('#sfx-wrong')[0].volume = 0.3;
     $('#sfx-wrong')[0].play();
 
     $('body').addClass('wrong');
@@ -152,24 +173,32 @@ class BackwardsHangman {
   }
 
   win() {
+    console.log('Win!');
     this.state.gameOver = true;
-    // TODO: Figure out what happens from here
+
+    $('#sfx-win')[0].volume = 0.2;
     $('#sfx-win')[0].play();
     $('#face').show();
     $('#sun').show();
     $('body').addClass('win');
     window.setTimeout(() => {
-      $('#retry').css('display', 'block');
-      $(document).keypress(e => {
-        $(document).unbind('keypress');
-        this.restartGame();
-      });
+      if (this.state.level === PlayableWords.length - 1) {
+        window.alert('You win!');
+        // TODO: What to show here?
+      } else {
+        $('#retry').css('display', 'block');
+        $(document).keypress(e => {
+          $(document).unbind('keypress');
+          this.restartGame(true);
+        });
+      }
     }, 1000);
   }
 
   lose() {
     this.state.gameOver = true;
 
+    $('#sfx-lose')[0].volume = 0.3;
     $('#sfx-lose')[0].play();
     $('#lose').show();
 
@@ -178,7 +207,7 @@ class BackwardsHangman {
       $('#retry').css('display', 'block');
       $(document).keypress(e => {
         $(document).unbind('keypress');
-        this.restartGame();
+        this.restartGame(false);
       });
     }, 500);
   }
