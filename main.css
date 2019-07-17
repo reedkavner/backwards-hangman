@@ -2,6 +2,7 @@ body {
     background: black;
     color: white;
     font-family: Arial, Helvetica, Sans-Serif;
+    margin: 0;
 }
 
 body.wrong {
@@ -14,17 +15,39 @@ body.wrong #man {
 }
 
 body.win {
-    background: green;
+    background-image: url('assets/img/grass.png');
+    background-repeat: repeat-x;
+    background-size: contain;
 }
 
-.main>div {
+.main > div{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
+    align-content: center;
+    height: 100vh;
+    flex-wrap: wrap;
 }
 
-#welcome {}
+#welcome > *{
+  display: flex;
+}
+
+#press-to-start{
+  font-size: 2em;
+  margin-top: 5vh;
+  justify-content: center;
+  width: 100%;
+}
+
+#footer{
+  position: absolute;
+  bottom: 1em;
+}
+
+a, a:visited, a:hover{
+  color: #7b7bff;
+}
 
 img#logo {
     width: 90vw;
@@ -85,6 +108,10 @@ span#used {
     height: 90vh;
 }
 
+g#face{
+  display: none;
+}
+
 #guess {
     position: absolute;
     z-index: 999999;
@@ -100,34 +127,104 @@ span#used {
 }
 
 @keyframes glow{
-  0% {
+  from {
     text-shadow: 0 0 0.1em white;
   }
 
-  100% {
+  to {
     text-shadow: none;
   }
 }
 
-#end {
+#lose{
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#lose > *{
+  font-size: 28vw;
+  padding: 0.01em;
+  height: auto;
+  width: auto;
+  text-transform: uppercase;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  filter: blur(.5px);
+}
+
+#lose-bg {
+    z-index: 2;
+    animation: lose-bg linear .7s;
+    background-color: #c89f23;
+    color: #fee734;
+    box-shadow: 0 0 .05em .05em #c89f23;
+    transform: translate(-50%, -50%) rotate(4deg);
+    mix-blend-mode: difference;
+}
+
+
+@keyframes lose-bg {
+  from {
+    background-color: #25c926;
+    color: #36fd42;
+    box-shadow: 0 0 .05em .05em #25c926;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    background-color: #c89f23;
+    color: #fee734;
+    box-shadow: 0 0 .05em .05em #c89f23;
+    transform: translate(-50%, -50%) rotate(4deg);
+  }
+}
+
+#lose-overlay{
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  color: #498130;
+  animation: lose-over linear .7s;
+  mix-blend-mode: multiply;
+  -webkit-text-stroke: 2px black;
+}
+
+@keyframes lose-over {
+  from {
+    color: #8741fb;
+  }
+  to {
+    color: #498130;
+  }
+}
+
+#sun{
     display: none;
     position: absolute;
-    z-index: 999999;
-    text-transform: uppercase;
-    font-size: 24vw;
-    height: auto;
-    width: auto;
-    padding: 0.05em;
+    top: .5em;
+    right: 2em;
+    height: 20vw;
+    animation: spin infinite linear 15s;
 }
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
 
 #retry {
     display: none;
     margin: auto;
-}
-
-.lose {
-    background-color: #bc9a23;
-    color: #44812e;
+    position: absolute;
+    bottom: 2em;
+    font-size: 2em;
+    z-index: 9999
 }
 
 #sfx {
