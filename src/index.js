@@ -35,9 +35,14 @@ class BackwardsHangman {
       gameOver: false,
     };
 
-    $('#end').hide();
+    //TODO add a class to everything that should be hidden on restart
+    $('#lose').hide();
+    $('#face').hide();
+    $('#sun').hide();
+    $('body').attr('class', '');
     $('#retry').css('display', 'none');
     this.displayNewWord(this.state.word);
+    this.startListener();
   }
 
   displayNewWord(word) {
@@ -122,7 +127,7 @@ class BackwardsHangman {
         $('rect#Larm').hide();
         break;
       case 5:
-        $('rect#body').hide();
+        $('rect#torso').hide();
         break;
       case 6:
         $('path#head').hide();
@@ -133,23 +138,33 @@ class BackwardsHangman {
 
   win() {
     this.state.gameOver = true;
-
     // TODO: Figure out what happens from here
-    $('#sfx-start')[0].play();
+    $('#sfx-win')[0].play();
+    $('#face').show();
+    $('#sun').show();
     $('body').addClass('win');
+    window.setTimeout(() => {
+      $('#retry').css('display', 'block');
+      $(document).keypress(e => {
+        $(document).unbind("keypress");
+        this.restartGame();
+      });
+    }, 1000);
   }
 
   lose() {
     this.state.gameOver = true;
 
     $('#sfx-lose')[0].play();
-    $('#end').addClass('lose');
-    $('#end').show();
+    $('#lose').show();
 
     // Wait a bit and show a retry button
     window.setTimeout(() => {
       $('#retry').css('display', 'block');
-      $('#retry').on('click', () => this.restartGame());
+      $(document).keypress(e => {
+        $(document).unbind("keypress");
+        this.restartGame();
+      });
     }, 500);
   }
 }
