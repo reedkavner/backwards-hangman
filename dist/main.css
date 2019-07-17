@@ -1,108 +1,232 @@
 body {
-  background: black;
-  color: white;
-  font-family: Arial, Helvetica, Sans-Serif;
+    background: black;
+    color: white;
+    font-family: Arial, Helvetica, Sans-Serif;
+    margin: 0;
 }
 
 body.wrong {
-  background: #fc5327;
-  color: #3fc0f2;
+    background: #fc5327;
+    color: #3fc0f2;
 }
 
 body.wrong #man {
-  fill: #3fc0f2;
+    fill: #3fc0f2;
 }
 
 body.win {
-  background: green;
+    background-image: url('assets/img/grass.png');
+    background-repeat: repeat-x;
+    background-size: contain;
 }
 
-.game {
+.main > div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-content: center;
+    height: 100vh;
+    flex-wrap: wrap;
+}
+
+#welcome > *{
   display: flex;
-  align-items: center;
+}
+
+#press-to-start{
+  font-size: 2em;
+  margin-top: 5vh;
   justify-content: center;
-  height: 100%;
+  width: 100%;
+}
+
+#footer{
+  position: absolute;
+  bottom: 1em;
+}
+
+a, a:visited, a:hover{
+  color: #7b7bff;
+}
+
+img#logo {
+    width: 90vw;
+    max-width: 800px;
+}
+
+#game {
+    display: none;
 }
 
 .half {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #man-container {
-  width: 50%;
+    width: 50%;
 }
 
 #word-container {
-  width: 50%;
-  flex-wrap: wrap;
-  height: 30vh;
+    width: 50%;
+    flex-wrap: wrap;
+    height: 30vh;
 }
 
 #word-letters {
-  width: 100%;
-  align-self: flex-start;
-  align-items: center;
-  display: flex;
-  justify-content: center;
+    width: 100%;
+    align-self: flex-start;
+    align-items: center;
+    display: flex;
+    justify-content: center;
 }
 
 .letter {
-  border-bottom: 0.15em white solid;
-  font-size: 3em;
-  text-transform: uppercase;
-  margin: 0 0.1em;
-  width: 1em;
-  height: 1.15em;
-  text-align: center;
-  alignment-baseline: baseline;
+    border-bottom: 0.15em white solid;
+    font-size: 3em;
+    text-transform: uppercase;
+    margin: 0 0.1em;
+    width: 1em;
+    height: 1.15em;
+    text-align: center;
+    alignment-baseline: baseline;
 }
 
 #used-letters {
-  align-self: flex-end;
-  display: none;
-  width: 100%;
+    align-self: flex-end;
+    display: none;
+    width: 100%;
 }
 
 span#used {
-  text-transform: uppercase;
+    text-transform: uppercase;
 }
 
 #man {
-  fill: white;
-  height: 90vh;
+    fill: white;
+    height: 90vh;
+}
+
+g#face{
+  display: none;
 }
 
 #guess {
-  position: absolute;
-  z-index: 999999;
-  text-transform: uppercase;
-  font-size: 40vw;
-  color: #3fc0f2;
+    position: absolute;
+    z-index: 999999;
+    text-transform: uppercase;
+    font-size: 40vw;
+    color: #3fc0f2;
+
+    -webkit-text-stroke: .01em white;
 }
 
-#end {
+#guess.glow {
+    animation: glow .8s;
+}
+
+@keyframes glow{
+  from {
+    text-shadow: 0 0 0.1em white;
+  }
+
+  to {
+    text-shadow: none;
+  }
+}
+
+#lose{
   display: none;
   position: absolute;
-  z-index: 999999;
-  text-transform: uppercase;
-  font-size: 24vw;
+  width: 100%;
+  height: 100%;
+}
+
+#lose > *{
+  font-size: 28vw;
+  padding: 0.01em;
   height: auto;
   width: auto;
-  padding: 0.05em;
+  text-transform: uppercase;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  filter: blur(.5px);
 }
+
+#lose-bg {
+    z-index: 2;
+    animation: lose-bg linear .7s;
+    background-color: #c89f23;
+    color: #fee734;
+    box-shadow: 0 0 .05em .05em #c89f23;
+    transform: translate(-50%, -50%) rotate(4deg);
+    mix-blend-mode: difference;
+}
+
+
+@keyframes lose-bg {
+  from {
+    background-color: #25c926;
+    color: #36fd42;
+    box-shadow: 0 0 .05em .05em #25c926;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    background-color: #c89f23;
+    color: #fee734;
+    box-shadow: 0 0 .05em .05em #c89f23;
+    transform: translate(-50%, -50%) rotate(4deg);
+  }
+}
+
+#lose-overlay{
+  z-index: 3;
+  transform: translate(-50%, -50%);
+  color: #498130;
+  animation: lose-over linear .7s;
+  mix-blend-mode: multiply;
+  -webkit-text-stroke: 2px black;
+}
+
+@keyframes lose-over {
+  from {
+    color: #8741fb;
+  }
+  to {
+    color: #498130;
+  }
+}
+
+#sun{
+    display: none;
+    position: absolute;
+    top: .5em;
+    right: 2em;
+    height: 20vw;
+    animation: spin infinite linear 15s;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
 
 #retry {
-  display: none;
-  margin: auto;
-}
-
-.lose {
-  background-color: #bc9a23;
-  color: #44812e;
+    display: none;
+    margin: auto;
+    position: absolute;
+    bottom: 2em;
+    font-size: 2em;
+    z-index: 9999
 }
 
 #sfx {
-  display: none;
+    display: none;
 }

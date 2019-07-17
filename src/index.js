@@ -15,11 +15,13 @@ class BackwardsHangman {
 
   // Init
   startGame() {
+    $('#sfx-start')[0].play();
     // Generate a random word and display its letters.
     this.state.word = validWords[Math.round(Math.random() * validWords.length)];
 
     this.displayNewWord(this.state.word);
     this.startListener();
+    $('#game').css('display', 'flex');
   }
 
   restartGame() {
@@ -33,9 +35,14 @@ class BackwardsHangman {
       gameOver: false,
     };
 
-    $('#end').hide();
+    //TODO add a class to everything that should be hidden on restart
+    $('#lose').hide();
+    $('#face').hide();
+    $('#sun').hide();
+    $('body').attr('class', '');
     $('#retry').css('display', 'none');
     this.displayNewWord(this.state.word);
+    this.startListener();
   }
 
   displayNewWord(word) {
@@ -70,7 +77,8 @@ class BackwardsHangman {
 
     // Display the guess
     $('#guess').text(letter);
-    window.setTimeout(() => $('#guess').text(''), 300);
+    $('#guess').addClass('glow');
+    window.setTimeout(() => $('#guess').text('').removeClass('glow'), 300);
 
     // Wait a beat then evaluate the guess
     window.setTimeout(
@@ -119,7 +127,7 @@ class BackwardsHangman {
         $('rect#Larm').hide();
         break;
       case 5:
-        $('rect#body').hide();
+        $('rect#torso').hide();
         break;
       case 6:
         $('path#head').hide();
@@ -130,28 +138,42 @@ class BackwardsHangman {
 
   win() {
     this.state.gameOver = true;
-
     // TODO: Figure out what happens from here
-    $('#sfx-start')[0].play();
+    $('#sfx-win')[0].play();
+    $('#face').show();
+    $('#sun').show();
     $('body').addClass('win');
+    window.setTimeout(() => {
+      $('#retry').css('display', 'block');
+      $(document).keypress(e => {
+        $(document).unbind("keypress");
+        this.restartGame();
+      });
+    }, 1000);
   }
 
   lose() {
     this.state.gameOver = true;
 
     $('#sfx-lose')[0].play();
-    $('#end').addClass('lose');
-    $('#end').show();
+    $('#lose').show();
 
     // Wait a bit and show a retry button
     window.setTimeout(() => {
       $('#retry').css('display', 'block');
-      $('#retry').on('click', () => this.restartGame());
+      $(document).keypress(e => {
+        $(document).unbind("keypress");
+        this.restartGame();
+      });
     }, 500);
   }
 }
 
 window.onload = () => {
-  const Game = new BackwardsHangman();
-  Game.startGame();
+  $(document).keypress(e => {
+    $(document).unbind("keypress");
+    $('#welcome').hide();
+    const Game = new BackwardsHangman();
+    Game.startGame(); 
+  });
 };
