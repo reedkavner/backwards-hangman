@@ -1,6 +1,6 @@
 // List of playable words in order that they'll be played.
-const PlayableWords = ['cow', 'e*trade', 'ke$ha'];
-// 'curagitçao', 'Бык'
+const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык'];
+//const PlayableWords = ['cow'];
 class BackwardsHangman {
   constructor() {
     this.state = {
@@ -17,7 +17,11 @@ class BackwardsHangman {
 
   // Init
   startGame() {
-    $('#sfx-start')[0].volume = 0.3;
+    // set volume for all sounds
+    $('audio').each(function(){
+      $(this)[0].volume = .5;
+    });
+
     $('#sfx-start')[0].play();
     // Generate a random word and display its letters.
     this.state.word = PlayableWords[0].split('');
@@ -50,6 +54,7 @@ class BackwardsHangman {
     $('#lose').hide();
     $('#face').hide();
     $('#used-letters').hide();
+    $('#word-letters').show();
     $('#sun').hide();
     $('body').attr('class', '');
     $('#retry').css('display', 'none');
@@ -77,7 +82,7 @@ class BackwardsHangman {
 
         if (!this.state.gameOver) {
           console.log(e.code);
-          if (e.code.includes('Key') || e.code.includes('Digit')) {
+          if (e.charCode > 32) {
             this.guessLetter(e.key.toLowerCase());
           }
         }
@@ -86,7 +91,6 @@ class BackwardsHangman {
   }
 
   guessLetter(letter) {
-    $('#sfx-guess')[0].volume = 0.3;
     $('#sfx-guess')[0].play();
 
     // Display the guess
@@ -107,7 +111,6 @@ class BackwardsHangman {
   }
 
   correctGuess(letter) {
-    $('#sfx-correct')[0].volume = 0.3;
     $('#sfx-correct')[0].play();
 
     if (!this.state.correctGuesses.includes(letter)) {
@@ -133,7 +136,6 @@ class BackwardsHangman {
 
   incorrectGuess(letter) {
     // TODO: Move sound effects into helper fn.
-    $('#sfx-wrong')[0].volume = 0.3;
     $('#sfx-wrong')[0].play();
 
     $('body').addClass('wrong');
@@ -174,29 +176,39 @@ class BackwardsHangman {
     console.log('Win!');
     this.state.gameOver = true;
 
-    $('#face').show();
-    $('#sun').show();
-    $('body').addClass('win');
     window.setTimeout(() => {
       if (this.state.level === PlayableWords.length - 1) {
-        window.alert('You Win!');
-        $('#sfx-win')[0].volume = 0.2;
+        // User has won the whole game
+        $('#word-letters').hide();
+        $('#used-letters').hide();
+        $('#face').show();
+        $('#sun').show();
+        $('body').addClass('win');
         $('#sfx-win')[0].play();
-        // TODO: Add some special effect or popup when you win.
+        window.setTimeout(() => {
+          $('#retry').css('display', 'block');
+          $(document).keypress(e => {
+            $(document).unbind('keypress');
+            this.restartGame(false);
+      });
+    }, 500);
       } else {
-        $('#retry').css('display', 'block');
-        $(document).keypress(e => {
-          $(document).unbind('keypress');
+        // User has beaten level
+        console.log("Level up!");
+        $('#sfx-level')[0].play();
+        $('body').addClass('level-up');
+        window.setTimeout(() => {
+          $('body').removeClass('level-up');
           this.restartGame(true);
-        });
+        }, 830);
+        
       }
-    }, 1000);
+    }, 200);
   }
 
   lose() {
     this.state.gameOver = true;
 
-    $('#sfx-lose')[0].volume = 0.3;
     $('#sfx-lose')[0].play();
     $('#lose').show();
 
@@ -212,10 +224,15 @@ class BackwardsHangman {
 }
 
 window.onload = () => {
-  $(document).keypress(e => {
-    $(document).unbind('keypress');
-    $('#welcome').hide();
-    const Game = new BackwardsHangman();
-    Game.startGame();
-  });
+
+  if (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0)|| (navigator.msMaxTouchPoints > 0)){
+    $('#touchscreen').show();
+  }else{
+    $(document).keypress(e => {
+      $(document).unbind('keypress');
+      $('#welcome').hide();
+      const Game = new BackwardsHangman();
+      Game.startGame();
+    });
+  }
 };
