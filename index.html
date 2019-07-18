@@ -5,6 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="stylesheet" href="main.css" />
     <title>Backwards Hangman</title>
+    <meta name="description" content="Play Backwards Hangman. Inspired by Bill Wurtz. Made by Reed Kavner and Noah Yamamoto.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" href="assets/img/favicon.png">
+    <!-- FB OG garbage -->
+    <meta property="og:title" content="Backwards Hangman">
+    <meta property="og:description" content="Play Backwards Hangman. Inspired by Bill Wurtz. Made by Reed Kavner and Noah Yamamoto.">
+    <meta property="og:url" content="https://www.backwardshangman.com">
+    <meta property="og:image" content="https://www.backwardshangman.com/assets/img/social.png">
+    <!-- twitter garbage -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:creator" content="@reedkavner" />
+    <meta property="og:url" content="https://www.backwardshangman.com" />
+    <meta property="og:title" content="Backwards Hangman" />
+    <meta property="og:description" content="Play Backwards Hangman. Inspired by Bill Wurtz. Made by Reed Kavner and Noah Yamamoto." />
+    <meta property="og:image" content="https://www.backwardshangman.com/assets/img/social.png" />
   </head>
 
   <body class="">
@@ -12,6 +27,7 @@
       <div id="welcome">
         <img id="logo" src="assets/img/logo.gif" />
         <div id="press-to-start">press any key to start</div>
+        <div id="touchscreen" style="display:none;">This game does not support on-screen keyboards. Try playing on your computer.</div>
         <div id="footer">
           <span>
             inspired by <a href="https://www.youtube.com/watch?v=P1MkKXbEGnQ">bill wurtz</a> | made by
@@ -109,6 +125,7 @@
       <audio id="sfx-wrong" src="assets/sfx/wrong.mp3" preload="auto"></audio>
       <audio id="sfx-lose" src="assets/sfx/lose.mp3" preload="auto"></audio>
       <audio id="sfx-win" src="assets/sfx/lala.mp3" preload="auto"></audio>
+      <audio id="sfx-level" src="assets/sfx/levelup.mp3" preload="auto"></audio>
     </div>
   </body>
 </html>

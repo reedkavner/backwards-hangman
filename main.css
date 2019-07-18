@@ -14,6 +14,11 @@ body.wrong #man {
     fill: #3fc0f2;
 }
 
+body.level-up {
+  background-color: #18f1ff;
+  transition: background-color .6s linear;
+}
+
 body.win {
     background-image: url('assets/img/grass.png');
     background-repeat: repeat-x;
@@ -39,6 +44,17 @@ body.win {
   justify-content: center;
   width: 100%;
 }
+
+#touchscreen{
+  border: 1px solid red;
+  padding: .2em;
+  font-size: 1.2em;
+  margin-top: 5vh;
+  justify-content: center;
+  width: 100%;
+  text-align: center;
+}
+
 
 #footer{
   position: absolute;
