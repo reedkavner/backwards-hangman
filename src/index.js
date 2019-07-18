@@ -1,12 +1,11 @@
-// List of playable words in order that they'll be played. These need to be lowercase.
-const PlayableWords = ['cow', 'absolutely', 'ke$ha'];
+// List of playable words in order that they'll be played.
+const PlayableWords = ['cow', 'e*trade', 'ke$ha', 'curaçao', 'Бык'];
 
 class BackwardsHangman {
   constructor() {
     this.state = {
       word: PlayableWords[0].split(''),
       level: 0,
-      validKeys: 'abcdefghijklmnopqrstuvwxyz',
       wrongCount: 0,
       correctCount: 0,
       wrongGuesses: [],
@@ -32,7 +31,6 @@ class BackwardsHangman {
     this.state = {
       word: win ? PlayableWords[this.state.level + 1].split('') : PlayableWords[0].split(''),
       level: win ? this.state.level + 1 : 0,
-      validKeys: 'abcdefghijklmnopqrstuvwxyz$',
       wrongCount: 0,
       correctCount: 0,
       wrongGuesses: [],
@@ -78,9 +76,9 @@ class BackwardsHangman {
         window.setTimeout(() => (this.state.guessActive = false), 350);
 
         if (!this.state.gameOver) {
-          const pressedKey = e.key.toLowerCase();
-          if (this.state.validKeys.includes(pressedKey)) {
-            this.guessLetter(pressedKey);
+          console.log(e.code);
+          if (e.code.includes('Key') || e.code.includes('Digit')) {
+            this.guessLetter(e.key.toLowerCase());
           }
         }
       }
