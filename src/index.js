@@ -1,6 +1,6 @@
 // List of playable words in order that they'll be played.
-const PlayableWords = ['cow', 'e*trade', 'ke$ha', 'curaçao', 'Бык'];
-
+const PlayableWords = ['cow', 'e*trade', 'ke$ha'];
+// 'curagitçao', 'Бык'
 class BackwardsHangman {
   constructor() {
     this.state = {
@@ -174,15 +174,15 @@ class BackwardsHangman {
     console.log('Win!');
     this.state.gameOver = true;
 
-    $('#sfx-win')[0].volume = 0.2;
-    $('#sfx-win')[0].play();
     $('#face').show();
     $('#sun').show();
     $('body').addClass('win');
     window.setTimeout(() => {
       if (this.state.level === PlayableWords.length - 1) {
-        window.alert('You win!');
-        // TODO: What to show here?
+        window.alert('You Win!');
+        $('#sfx-win')[0].volume = 0.2;
+        $('#sfx-win')[0].play();
+        // TODO: Add some special effect or popup when you win.
       } else {
         $('#retry').css('display', 'block');
         $(document).keypress(e => {
