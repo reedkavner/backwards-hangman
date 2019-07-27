@@ -109,6 +109,9 @@ img#logo {
     text-align: center;
     alignment-baseline: baseline;
 }
+body.wrong .letter {
+    border-bottom: 0.15em #3fc0f2 solid;
+}
 
 #used-letters {
     align-self: flex-end;
