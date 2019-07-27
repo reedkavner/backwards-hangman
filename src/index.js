@@ -182,15 +182,18 @@ class BackwardsHangman {
 
     $('body').addClass('wrong');
 
+    this.state.wrongGuesses.push(letter);
+    ++this.state.wrongCount;
+
     window.setTimeout(() => {
       $('body').removeClass('wrong');
+
       this.state.guessActive = false;
+
+      $('#used').text(this.state.wrongGuesses.join(''));
+      if ($('#used-letters').is(':hidden')) $('#used-letters').show();
     }, 300);
 
-    this.state.wrongGuesses.push(letter);
-    $('#used').text(this.state.wrongGuesses.join(''));
-    if ($('#used-letters').is(':hidden')) $('#used-letters').show();
-    ++this.state.wrongCount;
 
     switch (this.state.wrongCount) {
       case 0:
