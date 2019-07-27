@@ -4,7 +4,7 @@ const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык', '¯\
 
 // As you get closer to losing the delay between the letter disappearing and the
 // "you're wrong" text appearing gets shorter
-const extraDelays = [225, 225, 200, 150, 0, 0, 0];
+const extraDelays = [225, 100, 50, 0, 0, 0, 0];
 
 const letterCanvas = document.getElementById('letter-canvas');
 const letterCtx = letterCanvas.getContext('2d');
