@@ -17,7 +17,11 @@ body.wrong #man {
 
 body.level-up {
   background-color: #18f1ff;
-  transition: background-color .6s linear;
+  transition: background-color .6s linear, color 1s linear;
+}
+body.level-up #man {
+  fill: #18f1ff;
+  transition: fill 1s linear;
 }
 
 body.win {
@@ -113,6 +117,10 @@ img#logo {
 }
 body.wrong .letter {
     border-bottom: 0.15em #3fc0f2 solid;
+}
+body.level-up .letter {
+  transition: border-color 1s linear;
+  border-color: #18f1ff;
 }
 
 #used-letters {
@@ -271,4 +279,67 @@ g#face{
 
 #sfx {
     display: none;
+}
+
+@keyframes flash {
+    0% {
+      opacity: 1;
+    }
+    49.9% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+}
+
+#win {
+  display: block;
+  transform: scale(1);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  opacity: 0;
+  mix-blend-mode: hard-light;
+  transition: opacity 1s linear;
+}
+body.level-up #win {
+  animation: flash 0.40s linear infinite;
+}
+#win1 {
+  z-index: 2;
+  position: absolute;
+  font-size: 150px;
+  color: #ffffff;
+  -webkit-text-stroke: 4.5px #000000;
+  mix-blend-mode: hard-light;
+  left: 50%;
+  top: 50%;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+body.level-up #win1 {
+  transition: transform 0.6s linear;
+  transform: translate(-50%, -50%) scale(1.25);
+}
+body.level-up #win2 {
+  transition: transform 0.6s linear;
+  transform: translate(-50%, -50%) translate(5px, 5px) scale(1.25);
+}
+#win2 {
+  z-index: 3;
+  position: absolute;
+  font-size: 150px;
+  color: #ff8e01;
+  -webkit-text-stroke: 4.5px #ffd04c;
+  mix-blend-mode: hard-light;
+  left: 50%;
+  top: 50%;
+  white-space: nowrap;
+  transform: translate(-50%,-50%) translate(5px, 5px);
 }
