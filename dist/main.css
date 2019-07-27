@@ -3,6 +3,7 @@ body {
     color: white;
     font-family: Helvetica, Arial, Sans-Serif;
     margin: 0;
+    user-select: none;
 }
 
 body.wrong {
@@ -59,6 +60,7 @@ body.win {
 #footer{
   position: absolute;
   bottom: 1em;
+  user-select: text;
 }
 
 a, a:visited, a:hover{

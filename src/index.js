@@ -78,7 +78,6 @@ class BackwardsHangman {
         return false; // Just reject it
       } else {
         this.state.guessActive = true;
-        window.setTimeout(() => (this.state.guessActive = false), 350);
 
         if (!this.state.gameOver) {
           console.log(e.code);
@@ -105,33 +104,37 @@ class BackwardsHangman {
     );
 
     // Wait a beat then evaluate the guess, not allowing a guess in that meantime.
-    if (this.state.word.includes(letter)) {
-      window.setTimeout(() => this.correctGuess(letter), 300);
-    } else window.setTimeout(() => this.incorrectGuess(letter), 300);
+    window.setTimeout(() => {
+      if (this.state.word.includes(letter) && !this.state.correctGuesses.includes(letter)) {
+        this.correctGuess(letter);
+      } else {
+        this.incorrectGuess(letter);
+      }
+    }, 300);
   }
 
   correctGuess(letter) {
+    this.state.guessActive = false;
+
     $('#sfx-correct')[0].play();
 
-    if (!this.state.correctGuesses.includes(letter)) {
-      this.state.correctGuesses.push(letter);
-      ++this.state.correctCount;
+    this.state.correctGuesses.push(letter);
+    ++this.state.correctCount;
 
-      // Whatever index the letter is in the word is also the index of the parent dom collection
-      const parentNodeList = $('#word-letters')
-        .children()
-        .toArray();
+    // Whatever index the letter is in the word is also the index of the parent dom collection
+    const parentNodeList = $('#word-letters')
+      .children()
+      .toArray();
 
-      parentNodeList.forEach(letterNode => {
-        if (letterNode.innerText.toLowerCase() === letter) {
-          letterNode.innerText = '';
-        }
-      });
+    parentNodeList.forEach(letterNode => {
+      if (letterNode.innerText.toLowerCase() === letter) {
+        letterNode.innerText = '';
+      }
+    });
 
-      // If the correctCount is the same the sum of the unique characters in the word, win.
-      const sumOfUniq = new Set(this.state.word).size;
-      if (this.state.correctCount === sumOfUniq) this.win();
-    }
+    // If the correctCount is the same the sum of the unique characters in the word, win.
+    const sumOfUniq = new Set(this.state.word).size;
+    if (this.state.correctCount === sumOfUniq) this.win();
   }
 
   incorrectGuess(letter) {
@@ -139,7 +142,11 @@ class BackwardsHangman {
     $('#sfx-wrong')[0].play();
 
     $('body').addClass('wrong');
-    window.setTimeout(() => $('body').removeClass('wrong'), 300);
+
+    window.setTimeout(() => {
+      $('body').removeClass('wrong');
+      this.state.guessActive = false;
+    }, 300);
 
     this.state.wrongGuesses.push(letter);
     $('#used').text(this.state.wrongGuesses.join(''));
@@ -201,7 +208,6 @@ class BackwardsHangman {
           $('body').removeClass('level-up');
           this.restartGame(true);
         }, 830);
-        
       }
     }, 200);
   }
