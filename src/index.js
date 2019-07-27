@@ -13,6 +13,32 @@ const fxCanvas = fx.canvas();
 fxCanvas.id = 'fx-canvas';
 document.getElementById('guess').appendChild(fxCanvas);
 
+export function formatTime(seconds) {
+  if (typeof seconds !== 'number') {
+    return 'N/A Seconds';
+  }
+  function plural(num, unit) {
+    num = Math.floor(num);
+    return num + ' ' + unit + (num === 1 ? '' : 's');
+  }
+  if (seconds < 120) {
+    return plural(seconds, 'Second');
+  }
+  if (seconds < 60 * 60) {
+    return plural(seconds / 60, 'Minute') + ' and '
+      + plural(seconds % 60, 'Second');
+  }
+  if (seconds < 24 * 60 * 60) {
+    return plural(seconds / (60 * 60), 'Hour') + ', '
+      + plural(seconds % (60 * 60) / 60, 'Minute') + ' and '
+      + plural(seconds % 60, 'Second');
+  }
+  return plural(seconds / (24 * 60 * 60), 'Day') + ', '
+    + plural(seconds % (24 * 60 * 60) / (60 * 60), 'Hour') + ', '
+    + plural(seconds % (60 * 60) / 60, 'Minute') + ' and '
+    + plural(seconds % 60, 'Second');
+}
+
 class BackwardsHangman {
   constructor() {
     this.state = {
@@ -24,6 +50,8 @@ class BackwardsHangman {
       correctGuesses: [],
       guessActive: false,
       gameOver: false,
+      startTime: Date.now(),
+      usedCheat: false,
     };
   }
 
@@ -44,6 +72,7 @@ class BackwardsHangman {
 
     window.win = () => {
       this.win();
+      this.state.usedCheat = true;
     }
   }
 
@@ -57,6 +86,8 @@ class BackwardsHangman {
       correctGuesses: [],
       guessActive: false,
       gameOver: false,
+      startTime: win ? this.state.startTime : Date.now(),
+      usedCheat: win ? this.state.usedCheat : false,
     };
 
     // Reshowing and rehiding various things.
@@ -70,6 +101,7 @@ class BackwardsHangman {
     $('#lose').hide();
     $('#face').hide();
     $('#used-letters').hide();
+    $('#time-taken').hide();
     $('#word-letters').show();
     $('#sun').hide();
     $('body').attr('class', '');
@@ -230,17 +262,23 @@ class BackwardsHangman {
         // User has won the whole game
         $('#word-letters').hide();
         $('#used-letters').hide();
+        debugger;
+        $('#time').text(
+          formatTime((Date.now() - this.state.startTime) / 1000) +
+          (this.state.usedCheat ? ' (cheated)' : '')
+        );
         $('#face').show();
         $('#sun').show();
         $('body').addClass('win');
         $('#sfx-win')[0].play();
         window.setTimeout(() => {
           $('#retry').css('display', 'block');
+          $('#time-taken').show();
           $(document).keypress(e => {
             $(document).unbind('keypress');
             this.restartGame(false);
           });
-        }, 500);
+        }, 1500);
       } else {
         // User has beaten level
         console.log("Level up!");

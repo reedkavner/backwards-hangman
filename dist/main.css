@@ -130,6 +130,12 @@ body.level-up .letter {
     width: 100%;
     font-size: 2em;
 }
+#time-taken {
+    align-self: flex-end;
+    display: none;
+    width: 100%;
+    font-size: 2em;
+}
 
 span#used {
     text-transform: uppercase;
