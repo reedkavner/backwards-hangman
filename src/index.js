@@ -1,6 +1,18 @@
 // List of playable words in order that they'll be played.
 const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык'];
 //const PlayableWords = ['cow'];
+
+// As you get closer to losing the delay between the letter disappearing and the
+// "you're wrong" text appearing gets shorter
+const extraDelays = [225, 225, 200, 150, 0, 0, 0];
+
+const letterCanvas = document.getElementById('letter-canvas');
+const letterCtx = letterCanvas.getContext('2d');
+const fxCanvas = fx.canvas();
+
+fxCanvas.id = 'fx-canvas';
+document.getElementById('guess').appendChild(fxCanvas);
+
 class BackwardsHangman {
   constructor() {
     this.state = {
@@ -18,7 +30,7 @@ class BackwardsHangman {
   // Init
   startGame() {
     // set volume for all sounds
-    $('audio').each(function(){
+    $('audio').each(function () {
       $(this)[0].volume = .5;
     });
 
@@ -29,6 +41,10 @@ class BackwardsHangman {
     this.displayNewWord(this.state.word);
     this.startListener();
     $('#game').css('display', 'flex');
+
+    window.win = () => {
+      this.win();
+    }
   }
 
   restartGame(win = false) {
@@ -93,13 +109,36 @@ class BackwardsHangman {
     $('#sfx-guess')[0].play();
 
     // Display the guess
-    $('#guess').text(letter);
-    $('#guess').addClass('glow');
+    letterCanvas.width = innerWidth * 0.4;
+    letterCanvas.height = innerWidth * 0.4;
+    letterCtx.font = "40vw Helvetica,Arial,sans-serif";
+    letterCtx.textBaseline = "middle";
+    letterCtx.textAlign = "center";
+    letterCtx.fillStyle = "#7389FF";
+    letterCtx.strokeStyle = "#fff";
+    letterCtx.lineWidth = innerWidth * 0.008;
+    letterCtx.fillText(letter.toUpperCase(), letterCanvas.width / 2, letterCanvas.height / 2);
+    letterCtx.strokeText(letter.toUpperCase(), letterCanvas.width / 2, letterCanvas.height / 2);
+
+    // Draw the zoom blur
+    const texture = fxCanvas.texture(letterCanvas);
+    fxCanvas
+      .draw(texture)
+      .zoomBlur(letterCanvas.width / 2, letterCanvas.height / 2, 0.15)
+      .update();
+
+    texture.destroy();
+
+    $('#fx-canvas').removeClass('fade');
+    // Wait two frames
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      $('#fx-canvas').addClass('fade');
+    }));
+
     window.setTimeout(
-      () =>
-        $('#guess')
-          .text('')
-          .removeClass('glow'),
+      () => {
+        letterCtx.clearRect(0, 0, letterCanvas.width, letterCanvas.height);
+      },
       300,
     );
 
@@ -110,7 +149,7 @@ class BackwardsHangman {
       } else {
         this.incorrectGuess(letter);
       }
-    }, 300);
+    }, 300 + extraDelays[this.state.wrongCount]);
   }
 
   correctGuess(letter) {
@@ -197,8 +236,8 @@ class BackwardsHangman {
           $(document).keypress(e => {
             $(document).unbind('keypress');
             this.restartGame(false);
-      });
-    }, 500);
+          });
+        }, 500);
       } else {
         // User has beaten level
         console.log("Level up!");
@@ -231,9 +270,9 @@ class BackwardsHangman {
 
 window.onload = () => {
 
-  if (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0)|| (navigator.msMaxTouchPoints > 0)){
+  if (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
     $('#touchscreen').show();
-  }else{
+  } else {
     $(document).keypress(e => {
       $(document).unbind('keypress');
       $('#welcome').hide();

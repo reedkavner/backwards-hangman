@@ -4,6 +4,7 @@ body {
     font-family: Helvetica, Arial, Sans-Serif;
     margin: 0;
     user-select: none;
+    overflow: hidden;
 }
 
 body.wrong {
@@ -143,27 +144,8 @@ g#face{
 }
 
 #guess {
-    position: absolute;
-    z-index: 999999;
-    text-transform: uppercase;
-    font-size: 40vw;
-    color: #3fc0f2;
-
-    -webkit-text-stroke: .01em white;
-}
-
-#guess.glow {
-    animation: glow .8s;
-}
-
-@keyframes glow{
-  from {
-    text-shadow: 0 0 0.1em white;
-  }
-
-  to {
-    text-shadow: none;
-  }
+  position: absolute;
+  z-index: 999999;
 }
 
 #lose{
@@ -342,4 +324,27 @@ body.level-up #win2 {
   top: 50%;
   white-space: nowrap;
   transform: translate(-50%,-50%) translate(5px, 5px);
+}
+
+#letter-canvas, #fx-canvas {
+  position: absolute;
+  width: calc(40vw + 100px);
+  height: calc(40vw + 100px);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+#fx-canvas {
+  mix-blend-mode: screen;
+}
+#fx-canvas.fade {
+  animation: fxFade 0.35s linear both;
+}
+@keyframes fxFade {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }

@@ -113,7 +113,9 @@
           <div id="word-letters"></div>
           <div id="used-letters">incorrect guesses: <span id="used"></span></div>
         </div>
-        <div id="guess"></div>
+        <div id="guess">
+          <canvas id="letter-canvas" width='40vw' height='40vw'></canvas>
+        </div>
         <div id="lose">
           <div id="lose-overlay">lose</div>
           <div id="lose-bg">lose</div>
@@ -132,6 +134,7 @@
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
       crossorigin="anonymous"
     ></script>
+    <script src="https://evanw.github.io/glfx.js/glfx.js"></script>
     <script src="main.js"></script>
     <div id="sfx">
       <audio id="sfx-start" src="assets/sfx/start.mp3" preload="auto"></audio>
