@@ -1,6 +1,44 @@
 // List of playable words in order that they'll be played.
 const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык'];
 //const PlayableWords = ['cow'];
+
+// As you get closer to losing the delay between the letter disappearing and the
+// "you're wrong" text appearing gets shorter
+const extraDelays = [225, 100, 50, 0, 0, 0, 0];
+
+const letterCanvas = document.getElementById('letter-canvas');
+const letterCtx = letterCanvas.getContext('2d');
+const fxCanvas = fx.canvas();
+
+fxCanvas.id = 'fx-canvas';
+document.getElementById('guess').appendChild(fxCanvas);
+
+export function formatTime(seconds) {
+  if (typeof seconds !== 'number') {
+    return 'N/A Seconds';
+  }
+  function plural(num, unit) {
+    num = Math.floor(num);
+    return num + ' ' + unit + (num === 1 ? '' : 's');
+  }
+  if (seconds < 120) {
+    return plural(seconds, 'Second');
+  }
+  if (seconds < 60 * 60) {
+    return plural(seconds / 60, 'Minute') + ' and '
+      + plural(seconds % 60, 'Second');
+  }
+  if (seconds < 24 * 60 * 60) {
+    return plural(seconds / (60 * 60), 'Hour') + ', '
+      + plural(seconds % (60 * 60) / 60, 'Minute') + ' and '
+      + plural(seconds % 60, 'Second');
+  }
+  return plural(seconds / (24 * 60 * 60), 'Day') + ', '
+    + plural(seconds % (24 * 60 * 60) / (60 * 60), 'Hour') + ', '
+    + plural(seconds % (60 * 60) / 60, 'Minute') + ' and '
+    + plural(seconds % 60, 'Second');
+}
+
 class BackwardsHangman {
   constructor() {
     this.state = {
@@ -12,13 +50,15 @@ class BackwardsHangman {
       correctGuesses: [],
       guessActive: false,
       gameOver: false,
+      startTime: Date.now(),
+      usedCheat: false,
     };
   }
 
   // Init
   startGame() {
     // set volume for all sounds
-    $('audio').each(function(){
+    $('audio').each(function () {
       $(this)[0].volume = .5;
     });
 
@@ -29,6 +69,11 @@ class BackwardsHangman {
     this.displayNewWord(this.state.word);
     this.startListener();
     $('#game').css('display', 'flex');
+
+    window.win = () => {
+      this.win();
+      this.state.usedCheat = true;
+    }
   }
 
   restartGame(win = false) {
@@ -41,6 +86,9 @@ class BackwardsHangman {
       correctGuesses: [],
       guessActive: false,
       gameOver: false,
+      startTime: win ? this.state.startTime : Date.now(),
+      usedCheat: win ? this.state.usedCheat : false,
+      keyIsDown: false,
     };
 
     // Reshowing and rehiding various things.
@@ -54,6 +102,7 @@ class BackwardsHangman {
     $('#lose').hide();
     $('#face').hide();
     $('#used-letters').hide();
+    $('#time-taken').hide();
     $('#word-letters').show();
     $('#sun').hide();
     $('body').attr('class', '');
@@ -73,15 +122,27 @@ class BackwardsHangman {
   }
 
   startListener() {
+    $(document).keyup(e => {
+      if (e.key === 'Compose') {
+        this.state.keyIsDown = 'Compose';
+      } else if (this.state.keyIsDown === true || this.state.keyIsDown === e.key) {
+        this.state.keyIsDown = false;
+      }
+    });
     $(document).keypress(e => {
+      if (this.state.keyIsDown !== 'Compose') {
+        if (this.state.keyIsDown) return false;
+        this.state.keyIsDown = e.key;
+      } else {
+        this.state.keyIsDown = true;
+      }
+
       if (this.state.guessActive) {
         return false; // Just reject it
       } else {
         this.state.guessActive = true;
-        window.setTimeout(() => (this.state.guessActive = false), 350);
 
         if (!this.state.gameOver) {
-          console.log(e.code);
           if (e.charCode > 32) {
             this.guessLetter(e.key.toLowerCase());
           }
@@ -91,47 +152,76 @@ class BackwardsHangman {
   }
 
   guessLetter(letter) {
+    console.log('Guess', letter.toUpperCase());
+
     $('#sfx-guess')[0].play();
 
     // Display the guess
-    $('#guess').text(letter);
-    $('#guess').addClass('glow');
+    letterCanvas.width = innerWidth * 0.4;
+    letterCanvas.height = innerWidth * 0.4;
+    letterCtx.font = "40vw Helvetica,Arial,sans-serif";
+    letterCtx.textBaseline = "middle";
+    letterCtx.textAlign = "center";
+    letterCtx.fillStyle = "#7389FF";
+    letterCtx.strokeStyle = "#fff";
+    letterCtx.lineWidth = innerWidth * 0.008;
+    letterCtx.fillText(letter.toUpperCase(), letterCanvas.width / 2, letterCanvas.height / 2);
+    letterCtx.strokeText(letter.toUpperCase(), letterCanvas.width / 2, letterCanvas.height / 2);
+
+    // Draw the zoom blur
+    const texture = fxCanvas.texture(letterCanvas);
+    fxCanvas
+      .draw(texture)
+      .zoomBlur(letterCanvas.width / 2, letterCanvas.height / 2, 0.15)
+      .update();
+
+    texture.destroy();
+
+    $('#fx-canvas').removeClass('fade');
+    // Wait two frames
+    window.requestAnimationFrame(() => window.requestAnimationFrame(() => {
+      $('#fx-canvas').addClass('fade');
+    }));
+
     window.setTimeout(
-      () =>
-        $('#guess')
-          .text('')
-          .removeClass('glow'),
+      () => {
+        letterCtx.clearRect(0, 0, letterCanvas.width, letterCanvas.height);
+      },
       300,
     );
 
     // Wait a beat then evaluate the guess, not allowing a guess in that meantime.
-    if (this.state.word.includes(letter)) {
-      window.setTimeout(() => this.correctGuess(letter), 300);
-    } else window.setTimeout(() => this.incorrectGuess(letter), 300);
+    window.setTimeout(() => {
+      if (this.state.word.includes(letter) && !this.state.correctGuesses.includes(letter)) {
+        this.correctGuess(letter);
+      } else {
+        this.incorrectGuess(letter);
+      }
+    }, 300 + extraDelays[this.state.wrongCount]);
   }
 
   correctGuess(letter) {
+    this.state.guessActive = false;
+
     $('#sfx-correct')[0].play();
 
-    if (!this.state.correctGuesses.includes(letter)) {
-      this.state.correctGuesses.push(letter);
-      ++this.state.correctCount;
+    this.state.correctGuesses.push(letter);
+    ++this.state.correctCount;
 
-      // Whatever index the letter is in the word is also the index of the parent dom collection
-      const parentNodeList = $('#word-letters')
-        .children()
-        .toArray();
+    // Whatever index the letter is in the word is also the index of the parent dom collection
+    const parentNodeList = $('#word-letters')
+      .children()
+      .toArray();
 
-      parentNodeList.forEach(letterNode => {
-        if (letterNode.innerText.toLowerCase() === letter) {
-          letterNode.innerText = '';
-        }
-      });
+    parentNodeList.forEach(letterNode => {
+      if (letterNode.innerText.toLowerCase() === letter) {
+        letterNode.innerText = '';
+      }
+    });
 
-      // If the correctCount is the same the sum of the unique characters in the word, win.
-      const sumOfUniq = new Set(this.state.word).size;
-      if (this.state.correctCount === sumOfUniq) this.win();
-    }
+    // If the correctCount is the same the sum of the unique characters in the word, win.
+    const sumOfUniq = new Set(this.state.word).size;
+    if (this.state.correctCount === sumOfUniq) this.win();
   }
 
   incorrectGuess(letter) {
@@ -139,12 +229,19 @@ class BackwardsHangman {
     $('#sfx-wrong')[0].play();
 
     $('body').addClass('wrong');
-    window.setTimeout(() => $('body').removeClass('wrong'), 300);
 
     this.state.wrongGuesses.push(letter);
-    $('#used').text(this.state.wrongGuesses.join(''));
-    if ($('#used-letters').is(':hidden')) $('#used-letters').show();
     ++this.state.wrongCount;
+
+    window.setTimeout(() => {
+      $('body').removeClass('wrong');
+
+      this.state.guessActive = false;
+
+      $('#used').text(this.state.wrongGuesses.join(''));
+      if ($('#used-letters').is(':hidden')) $('#used-letters').show();
+    }, 300);
+
 
     switch (this.state.wrongCount) {
       case 0:
@@ -181,17 +278,22 @@ class BackwardsHangman {
         // User has won the whole game
         $('#word-letters').hide();
         $('#used-letters').hide();
+        $('#time').text(
+          formatTime((Date.now() - this.state.startTime) / 1000) +
+          (this.state.usedCheat ? ' (cheated)' : '')
+        );
         $('#face').show();
         $('#sun').show();
         $('body').addClass('win');
         $('#sfx-win')[0].play();
         window.setTimeout(() => {
           $('#retry').css('display', 'block');
+          $('#time-taken').show();
           $(document).keypress(e => {
             $(document).unbind('keypress');
             this.restartGame(false);
-      });
-    }, 500);
+          });
+        }, 1500);
       } else {
         // User has beaten level
         console.log("Level up!");
@@ -201,7 +303,6 @@ class BackwardsHangman {
           $('body').removeClass('level-up');
           this.restartGame(true);
         }, 830);
-        
       }
     }, 200);
   }
@@ -225,9 +326,9 @@ class BackwardsHangman {
 
 window.onload = () => {
 
-  if (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0)|| (navigator.msMaxTouchPoints > 0)){
+  if (('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) {
     $('#touchscreen').show();
-  }else{
+  } else {
     $(document).keypress(e => {
       $(document).unbind('keypress');
       $('#welcome').hide();
