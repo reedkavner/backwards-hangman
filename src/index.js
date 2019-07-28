@@ -88,6 +88,7 @@ class BackwardsHangman {
       gameOver: false,
       startTime: win ? this.state.startTime : Date.now(),
       usedCheat: win ? this.state.usedCheat : false,
+      keyIsDown: false,
     };
 
     // Reshowing and rehiding various things.
@@ -121,14 +122,21 @@ class BackwardsHangman {
   }
 
   startListener() {
+    $(document).keyup(e => {
+      if(this.state.keyIsDown === e.key) {
+        this.state.keyIsDown = false;
+      }
+    });
     $(document).keypress(e => {
+      if(this.state.keyIsDown) return false;
+      this.state.keyIsDown = e.key;
+
       if (this.state.guessActive) {
         return false; // Just reject it
       } else {
         this.state.guessActive = true;
 
         if (!this.state.gameOver) {
-          console.log(e.code);
           if (e.charCode > 32) {
             this.guessLetter(e.key.toLowerCase());
           }
