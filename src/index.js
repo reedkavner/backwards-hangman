@@ -123,13 +123,19 @@ class BackwardsHangman {
 
   startListener() {
     $(document).keyup(e => {
-      if(this.state.keyIsDown === e.key) {
+      if (e.key === 'Compose') {
+        this.state.keyIsDown = 'Compose';
+      } else if (this.state.keyIsDown === true || this.state.keyIsDown === e.key) {
         this.state.keyIsDown = false;
       }
     });
     $(document).keypress(e => {
-      if(this.state.keyIsDown) return false;
-      this.state.keyIsDown = e.key;
+      if (this.state.keyIsDown !== 'Compose') {
+        if (this.state.keyIsDown) return false;
+        this.state.keyIsDown = e.key;
+      } else {
+        this.state.keyIsDown = true;
+      }
 
       if (this.state.guessActive) {
         return false; // Just reject it
@@ -146,6 +152,8 @@ class BackwardsHangman {
   }
 
   guessLetter(letter) {
+    console.log('Guess', letter.toUpperCase());
+
     $('#sfx-guess')[0].play();
 
     // Display the guess
@@ -270,7 +278,6 @@ class BackwardsHangman {
         // User has won the whole game
         $('#word-letters').hide();
         $('#used-letters').hide();
-        debugger;
         $('#time').text(
           formatTime((Date.now() - this.state.startTime) / 1000) +
           (this.state.usedCheat ? ' (cheated)' : '')
