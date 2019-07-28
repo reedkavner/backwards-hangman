@@ -1,5 +1,5 @@
 // List of playable words in order that they'll be played.
-const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык', '¯\\_(ツ)_/¯'];
+const PlayableWords = ['cow', 'ke$ha', 'curaçao', 'triscuit™', 'бык'];
 //const PlayableWords = ['cow'];
 
 // As you get closer to losing the delay between the letter disappearing and the
